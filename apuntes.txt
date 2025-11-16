@@ -1,0 +1,118 @@
+1. Selección de “suite” (rama del sistema)
+#d-i mirror/suite string testing
+
+
+Esto serviría para instalar Debian Testing en lugar de Stable.
+Como está comentado, no se usa.
+
+2. Selección de suite para componentes del instalador
+#d-i mirror/udeb/suite string testing
+
+
+Esto es para usar módulos del instalador desde otra suite (avanzado).
+También está comentado → no se usa.
+
+🧑‍💻 3. Configuración de cuentas
+A. Opción para deshabilitar root
+#d-i passwd/root-login boolean false
+
+¿Qué hace?
+
+Si lo activas:
+
+No se crea una cuenta root tradicional.
+
+El primer usuario tendrá permiso sudo.
+
+Esto imita el comportamiento de Ubuntu.
+
+Como está comentada → root SÍ se creará a menos que actives otra opción.
+
+B. Opción para no crear un usuario normal
+#d-i passwd/make-user boolean false
+
+
+Si la activas:
+
+El instalador solo crea la cuenta root.
+
+No creará un usuario “normal”.
+
+Esto es útil para sistemas servidores o appliances.
+
+C. Contraseña de root
+Contraseña sin cifrar:
+#d-i passwd/root-password password r00tme
+#d-i passwd/root-password-again password r00tme
+
+
+Si lo activas:
+
+Crea usuario root con esa contraseña tal cual.
+
+Contraseña cifrada:
+#d-i passwd/root-password-crypted password [crypt(3) hash]
+
+
+Aquí puedes poner la contraseña en formato hash (más seguro).
+El hash debe ser compatible con crypt(3), por ejemplo SHA-512.
+
+👤 4. Creación de un usuario normal
+
+Para crear un usuario normal, tienes:
+
+#d-i passwd/user-fullname string Debian User
+#d-i passwd/username string debian
+
+
+user-fullname → nombre real del usuario
+
+username → nombre de login
+
+Contraseña del usuario
+
+En texto plano:
+
+#d-i passwd/user-password password insecure
+#d-i passwd/user-password-again password insecure
+
+
+O cifrada:
+
+#d-i passwd/user-password-crypted password [crypt(3) hash]
+
+5. UID personalizado
+#d-i passwd/user-uid string 1010
+
+
+Permite que el usuario normal tenga un UID específico.
+
+Por defecto, Debian asigna 1000 al primer usuario.
+
+Puedes cambiarlo aquí.
+
+Como está comentado → no se aplica.
+
+🟢 Resumen práctico
+Opción	Qué hace	Estado
+root-login false	Deshabilita root	Comentado (no activo)
+make-user false	No crear usuario normal	Comentado
+root-password	Contraseña root	Comentado
+user-fullname / username	Crear usuario normal	Comentado
+user-password	Contraseña usuario	Comentado
+user-uid	UID del usuario	Comentado
+
+🚨 Como todo está comentado, el instalador te va a preguntar por root y usuario normalmente.
+
+Si quieres una configuración común, por ejemplo:
+✔️ Crear root + usuario normal:
+
+Te lo genero.
+
+✔️ Solo root sin usuario normal:
+
+También.
+
+✔️ Sin root, solo usuario con sudo (estilo Ubuntu):
+
+Lo preparo.
