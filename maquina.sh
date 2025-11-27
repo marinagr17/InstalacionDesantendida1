@@ -6,29 +6,43 @@ VM="deb13pr"
 ISO="/home/marina/Escritorio/ASO/instalacionDes/debian13preseed.iso"
 
 borrar() {
+    virsh destroy $VM
     virsh undefine --remove-all-storage --nvram $VM
-    if { $? -ne 0 }
+    if [ $? -ne 0 ]; then
       echo 'No se ha borrado'
     fi
 }
 
-crear() {
+crearU() {
     virt-install \
     --virt-type kvm \
-    --name $VM \
-    --cdrom $ISO \
+    --name "$VM" \
+    --cdrom "$ISO" \
     --os-variant debian13 \
-    --disk path=/var/lib/libvirt/images/$VM.qcow2,size=10 \
-    #--disk path=/var/lib/libvirt/images/servidornas2.qcow2,size=1 \
+    --disk path=/var/lib/libvirt/images/"$VM".qcow2,size=10 \
     --memory 1024 \
     --vcpus 1 \
     --network network=default \
-    --graphics none --console pty,target_type=serial
+    --boot uefi \
+    --graphics spice
+}
+
+crearB() {
+    virt-install \
+    --virt-type kvm \
+    --name "$VM" \
+    --cdrom "$ISO" \
+    --os-variant debian13 \
+    --disk path=/var/lib/libvirt/images/"$VM".qcow2,size=10 \
+    --memory 1024 \
+    --vcpus 1 \
+    --network network=default \
+    --graphics spice
 }
 
 menu() {
-    if [ -z "$1" ]
-	echo "Mete parametro"
+    if [ -z "$1" ]; then
+	echo "Mete parametro: b: borrar, cu: maquina UEFI, cb: maquina BIOS"
     exit 1
     fi
 
@@ -36,12 +50,17 @@ menu() {
 	b)
 	  borrar
 	;;
-	c)
-	  crear
+	cu)
+	  crearU
+	;;
+	cb)
+	  crearB
 	;;
 	*)
-	  echo "Error, b o c"
+	  echo "Error, b o cu o cb"
 	  exit 1
 	;;
     esac
 }
+
+menu "$1"
